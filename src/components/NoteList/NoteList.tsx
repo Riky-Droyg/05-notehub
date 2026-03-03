@@ -1,8 +1,8 @@
 import css from "./NoteList.module.css";
-import type { Note } from "../../types/note";
+import type { Note, NotesResponse } from "../../types/note";
 type NoteListProps = {
 	notes?: Note[];
-	deleteNote: (id: string) => Promise<string>;
+	deleteNote: (id: string) => Promise<NotesResponse>;
 };
 
 function NoteList({ deleteNote, notes }: NoteListProps) {

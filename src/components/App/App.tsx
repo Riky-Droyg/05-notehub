@@ -20,7 +20,7 @@ function App() {
 	});
 	const queryClient = useQueryClient();
 
-	const { data, error, isLoading, isError, isSuccess } = useQuery({
+	const { data } = useQuery({
 		queryKey: ["myQueryKey", searchQuery, page],
 		queryFn: () => noteService(searchQuery, page),
 	});
