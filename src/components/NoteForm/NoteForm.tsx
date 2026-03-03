@@ -16,13 +16,12 @@ type NoteFormProps = {
 	createNotes: (form: typeNoteForm) => Promise<NotesResponse>;
 };
 
-function NoteForm({ createNotes, dateForm, setDateForm, closeModal }: NoteFormProps) {
+function NoteForm({ createNotes, dateForm, closeModal }: NoteFormProps) {
 	return (
 		<Formik
 			validationSchema={NoteFormSchema}
 			initialValues={dateForm}
 			onSubmit={async (values: typeNoteForm) => {
-				// setDateForm(values);
 				await createNotes(values);
 			}}
 		>
