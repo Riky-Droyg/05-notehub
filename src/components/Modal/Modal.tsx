@@ -1,33 +1,46 @@
-import css from "./Modal.module.css";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import type { Dispatch, SetStateAction } from "react";
-import type { NoteFormData } from "../../types/note";
-import NoteForm from "../NoteForm/NoteForm";
+import css from "./Modal.module.css";
+
 type ModalProps = {
-	closeModal?: () => void;
-	dateForm: NoteFormData;
-	setDateForm: Dispatch<SetStateAction<NoteFormData>>;
-	setOpenModalState: React.Dispatch<React.SetStateAction<boolean>>;
+  closeModal: () => void;
+  children: React.ReactNode;
 };
 
-function Modal({setOpenModalState , dateForm, setDateForm, closeModal }: ModalProps) {
-	return createPortal(
-		<div
-			className={css.backdrop}
-			role="dialog"
-			aria-modal="true"
-		>
-			<div className={css.modal}>
-				<NoteForm
-					setOpenModalState = {setOpenModalState}
-					closeModal={closeModal}
-					dateForm={dateForm}
-					setDateForm={setDateForm}
-				/>
-			</div>
-		</div>,
-		document.body,
-	);
+function Modal({ closeModal, children }: ModalProps) {
+  // Закриття по Escape + блок скролу
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [closeModal]);
+
+  // Закриття по кліку на бекдроп (але не всередині модалки)
+  const onBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) closeModal();
+  };
+
+  return createPortal(
+    <div
+      className={css.backdrop}
+      role="dialog"
+      aria-modal="true"
+      onMouseDown={onBackdropClick}
+    >
+      <div className={css.modal}>{children}</div>
+    </div>,
+    document.body
+  );
 }
 
 export default Modal;

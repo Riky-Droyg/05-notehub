@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { NoteFormData } from "../types/note";
+import type { Note, NoteFormData } from "../types/note";
 import type { NotesResponse } from "../components/NoteForm/NoteForm";
 
 axios.defaults.baseURL = "https://notehub-public.goit.study/api";
@@ -21,10 +21,10 @@ export async function noteService(query: string, page: number): Promise<NotesRes
 	}
 }
 
-export async function createNoteService(dateForm: NoteFormData) {
+export async function createNoteService(dataForm: NoteFormData) {
 	try {
-		console.log(dateForm);
-		const res = await axios.post<NotesResponse>("/notes", dateForm);
+		console.log(dataForm);
+		const res = await axios.post<NotesResponse>("/notes", dataForm);
 		return {
 			notes: res.data.notes,
 			totalPages: res.data.totalPages,
@@ -39,7 +39,8 @@ export async function createNoteService(dateForm: NoteFormData) {
 
 export async function deleteNoteService(id: string) {
 	try {
-		await axios.delete<NoteFormData>(`/notes/${id}`);
+		 const res = await axios.delete<Note>(`/notes/${id}`);
+		return res.data
 	} catch (err) {
 		if (axios.isAxiosError(err)) {
 			throw new Error(err.response?.data?.status_message ?? err.message);

@@ -1,7 +1,7 @@
 // import css from "./Pagination.module.css";
 import ReactPaginate from "react-paginate";
 
-type PaginationProps = {
+interface PaginationProps {
 	page: number; // 1-based (як у твоєму API)
 	totalPages: number; // з бекенду
 	onChange: (page: number) => void;
