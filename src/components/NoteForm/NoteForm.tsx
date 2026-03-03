@@ -23,10 +23,10 @@ interface NoteFormProps {
 function NoteForm({ closeModal }: NoteFormProps) {
 	const queryClient = useQueryClient(); // ✅ спочатку
 
-	const createNotes = useMutation<NotesResponse, Error, NoteFormData>({
-		mutationFn: (form) => createNoteService(form),
+	const createNotes = useMutation({
+		mutationFn: (form: NoteFormData) => createNoteService(form),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["createNotes"] });
+			queryClient.invalidateQueries({ queryKey: ["myQueryKey"] });
 			closeModal();
 		},
 	});

@@ -25,10 +25,8 @@ export async function createNoteService(dataForm: NoteFormData) {
 	try {
 		console.log(dataForm);
 		const res = await axios.post<NotesResponse>("/notes", dataForm);
-		return {
-			notes: res.data.notes,
-			totalPages: res.data.totalPages,
-		};
+		console.log(res.data);
+		return res.data;
 	} catch (err) {
 		if (axios.isAxiosError(err)) {
 			throw new Error(err.response?.data?.status_message ?? err.message);
@@ -39,8 +37,8 @@ export async function createNoteService(dataForm: NoteFormData) {
 
 export async function deleteNoteService(id: string) {
 	try {
-		 const res = await axios.delete<Note>(`/notes/${id}`);
-		return res.data
+		const res = await axios.delete<Note>(`/notes/${id}`);
+		return res.data;
 	} catch (err) {
 		if (axios.isAxiosError(err)) {
 			throw new Error(err.response?.data?.status_message ?? err.message);
