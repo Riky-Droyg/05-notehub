@@ -1,46 +1,32 @@
 import { useState } from "react";
 import css from "./App.module.css";
 import NoteList from "../NoteList/NoteList";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
 import Modal from "../Modal/Modal";
 import SearchBox from "../SearchBox/SearchBox";
-import type { typeNoteForm } from "../../types/note";
-import { createNoteService, deleteNoteService, noteService } from "../../services/noteService";
+import type { NoteFormData } from "../../types/note";
+import { noteService } from "../../services/noteService";
 
 function App() {
 	const [page, setPage] = useState<number>(1);
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [openModalState, setOpenModalState] = useState<boolean>(false);
 
-	const [dateForm, setDateForm] = useState<typeNoteForm>({
+	const [dateForm, setDateForm] = useState<NoteFormData>({
 		title: "",
 		content: "",
 		tag: "Todo",
 	});
-	const queryClient = useQueryClient();
 
 	const { data } = useQuery({
 		queryKey: ["myQueryKey", searchQuery, page],
 		queryFn: () => noteService(searchQuery, page),
 	});
 
-	const createNotes = useMutation({
-		mutationFn: async (dateForm: typeNoteForm) => createNoteService(dateForm),
+	
 
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["myQueryKey"] });
-      setOpenModalState(false)
-		}
-	});
-
-	const deleteNote = useMutation({
-		mutationFn: async (id: string) => deleteNoteService(id),
-
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["myQueryKey"] });
-		}
-	});
+	
 
 	function openModal() {
 		setOpenModalState(!openModalState);
@@ -72,11 +58,11 @@ function App() {
 					Create note +
 				</button>
 			</header>
-			<NoteList deleteNote={deleteNote.mutateAsync} notes={data?.notes} />
+			<NoteList notes={data?.notes ?? []} />
 
 			{openModalState && (
 				<Modal
-					createNotes={createNotes.mutateAsync}
+					setOpenModalState={setOpenModalState}
 					dateForm={dateForm}
 					setDateForm={setDateForm}
 					closeModal={openModal}

@@ -1,16 +1,16 @@
 import css from "./Modal.module.css";
 import { createPortal } from "react-dom";
 import type { Dispatch, SetStateAction } from "react";
-import type { NotesResponse, typeNoteForm } from "../../types/note";
+import type { NoteFormData } from "../../types/note";
 import NoteForm from "../NoteForm/NoteForm";
 type ModalProps = {
 	closeModal?: () => void;
-	dateForm: typeNoteForm;
-	setDateForm: Dispatch<SetStateAction<typeNoteForm>>;
-	createNotes: (form: typeNoteForm) => Promise<NotesResponse>;
+	dateForm: NoteFormData;
+	setDateForm: Dispatch<SetStateAction<NoteFormData>>;
+	setOpenModalState: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function Modal({ createNotes, dateForm, setDateForm, closeModal }: ModalProps) {
+function Modal({setOpenModalState , dateForm, setDateForm, closeModal }: ModalProps) {
 	return createPortal(
 		<div
 			className={css.backdrop}
@@ -19,7 +19,7 @@ function Modal({ createNotes, dateForm, setDateForm, closeModal }: ModalProps) {
 		>
 			<div className={css.modal}>
 				<NoteForm
-					createNotes={createNotes}
+					setOpenModalState = {setOpenModalState}
 					closeModal={closeModal}
 					dateForm={dateForm}
 					setDateForm={setDateForm}

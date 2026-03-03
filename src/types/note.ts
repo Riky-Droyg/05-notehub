@@ -7,16 +7,10 @@ export interface Note {
   tag: string;
 }
 
-export interface NotesResponse {
-  notes: Note[];
-  totalPages: number;
-}
-
-
 
   type Tag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 
-  export type typeNoteForm = {
+  export type NoteFormData = {
     title: string;
     content: string;
     tag: Tag;

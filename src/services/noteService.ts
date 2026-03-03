@@ -1,5 +1,6 @@
 import axios from "axios";
-import type { NotesResponse, typeNoteForm } from "../types/note";
+import type { NoteFormData } from "../types/note";
+import type { NotesResponse } from "../components/NoteForm/NoteForm";
 
 axios.defaults.baseURL = "https://notehub-public.goit.study/api";
 axios.defaults.headers.common.Authorization = `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`;
@@ -20,7 +21,7 @@ export async function noteService(query: string, page: number): Promise<NotesRes
 	}
 }
 
-export async function createNoteService(dateForm: typeNoteForm) {
+export async function createNoteService(dateForm: NoteFormData) {
 	try {
 		console.log(dateForm);
 		const res = await axios.post<NotesResponse>("/notes", dateForm);
@@ -35,11 +36,10 @@ export async function createNoteService(dateForm: typeNoteForm) {
 		throw err;
 	}
 }
+
 export async function deleteNoteService(id: string) {
 	try {
-		console.log(id);
-		const res = await axios.delete<NotesResponse>(`/notes/${id}`);
-		return res.data;
+		await axios.delete<NoteFormData>(`/notes/${id}`);
 	} catch (err) {
 		if (axios.isAxiosError(err)) {
 			throw new Error(err.response?.data?.status_message ?? err.message);
