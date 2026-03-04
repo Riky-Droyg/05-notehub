@@ -36,14 +36,14 @@ export async function createNoteService(form: NoteFormData): Promise<Note> {
   }
 }
 
-export async function deleteNoteService(id: string) {
-	try {
-		const res = await axios.delete<Note>(`/notes/${id}`);
-		return res.data;
-	} catch (err) {
-		if (axios.isAxiosError(err)) {
-			throw new Error(err.response?.data?.status_message ?? err.message);
-		}
-		throw err;
-	}
+export async function deleteNoteService(id: string): Promise<Note> {
+  try {
+    const res = await axios.delete<Note>(`/notes/${id}`);
+    return res.data;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      throw new Error((err.response?.data as any)?.status_message ?? err.message);
+    }
+    throw err;
+  }
 }

@@ -7,65 +7,64 @@ import SearchBox from "../SearchBox/SearchBox";
 import NoteForm from "../NoteForm/NoteForm";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { noteService } from "../../services/noteService";
+import { useDebounce } from "use-debounce";
 
 function App() {
-	const [page, setPage] = useState(1);
-	const [searchQuery, setSearchQuery] = useState("");
-	const [openModalState, setOpenModalState] = useState(false);
+  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openModalState, setOpenModalState] = useState(false);
 
-	const { data } = useQuery({
-		queryKey: ["myQueryKey", searchQuery, page],
-		queryFn: () => noteService(searchQuery, page),
-		placeholderData: keepPreviousData,
-	});
+  // ✅ це значення використовуємо для запитів
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
-	const toggleModal = () => setOpenModalState((p) => !p);
+  const { data } = useQuery({
+    queryKey: ["myQueryKey", debouncedSearchQuery, page],
+    queryFn: () => noteService(debouncedSearchQuery, page),
+    placeholderData: keepPreviousData,
+  });
 
-	const handleSearchChange = (value: string) => {
-		setSearchQuery(value);
-		setPage(1);
-	};
+  const toggleModal = () => setOpenModalState((p) => !p);
 
-	const totalPages = data?.totalPages ?? 1;
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value); // оновлюємо одразу (щоб інпут був responsive)
+    setPage(1);            // скидаємо сторінку одразу
+  };
 
-	return (
-		<div className={css.app}>
-			<header className={css.toolbar}>
-				<SearchBox
-					value={searchQuery}
-					onChange={handleSearchChange}
-				/>
+  const totalPages = data?.totalPages ?? 1;
 
-				{totalPages > 1 && (
-					<ReactPaginate
-						pageCount={totalPages}
-						pageRangeDisplayed={5}
-						marginPagesDisplayed={1}
-						onPageChange={({ selected }) => setPage(selected + 1)}
-						forcePage={page - 1}
-						containerClassName={css.pagination}
-						activeClassName={css.active}
-						nextLabel="→"
-						previousLabel="←"
-					/>
-				)}
+  return (
+    <div className={css.app}>
+      <header className={css.toolbar}>
+        <SearchBox value={searchQuery} onChange={handleSearchChange} />
 
-				<button
-					onClick={toggleModal}
-					className={css.button}
-				>
-					Create note +
-				</button>
-			</header>
+        {totalPages > 1 && (
+          <ReactPaginate
+            pageCount={totalPages}
+            pageRangeDisplayed={5}
+            marginPagesDisplayed={1}
+            onPageChange={({ selected }) => setPage(selected + 1)}
+            forcePage={page - 1}
+            containerClassName={css.pagination}
+            activeClassName={css.active}
+            nextLabel="→"
+            previousLabel="←"
+          />
+        )}
 
-			<NoteList notes={data?.notes ?? []} />
-			{openModalState && (
-				<Modal closeModal={toggleModal}>
-					<NoteForm closeModal={toggleModal} />
-				</Modal>
-			)}
-		</div>
-	);
+        <button onClick={toggleModal} className={css.button}>
+          Create note +
+        </button>
+      </header>
+
+      <NoteList notes={data?.notes ?? []} />
+
+      {openModalState && (
+        <Modal closeModal={toggleModal}>
+          <NoteForm closeModal={toggleModal} />
+        </Modal>
+      )}
+    </div>
+  );
 }
 
 export default App;
